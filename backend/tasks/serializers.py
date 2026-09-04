@@ -23,3 +23,12 @@ class TaskSerializer(serializers.ModelSerializer):
             "status",
             "createdAt",
         )
+
+class TaskStatusUpdateSerializer(serializers.ModelSerializer):
+    """Validate and update the status of a task."""
+
+    class Meta:
+        """Configure the serializer for task status updates."""
+
+        model = Task
+        fields = ("status",)

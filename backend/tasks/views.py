@@ -1,9 +1,9 @@
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
-
+from rest_framework import generics
 from .models import Task
 from .serializers import TaskSerializer
-
+from .serializers import TaskSerializer, TaskStatusUpdateSerializer
 
 class TaskListView(generics.ListAPIView):
     """Return tasks with optional status filtering."""
@@ -34,3 +34,11 @@ class TaskListView(generics.ListAPIView):
             )
 
         return queryset.filter(status=status)
+
+
+class TaskStatusUpdateView(generics.UpdateAPIView):
+    """Update the status of an existing task."""
+
+    queryset = Task.objects.all()
+    serializer_class = TaskStatusUpdateSerializer
+    http_method_names = ["patch"]
