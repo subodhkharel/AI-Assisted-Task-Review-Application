@@ -4,6 +4,10 @@ from typing import Protocol
 from tasks.models import Task
 
 
+class AIProviderError(Exception):
+    """Represent an expected failure from an AI provider."""
+
+
 @dataclass(frozen=True)
 class TaskAnalysis:
     """Represent the structured result returned by an AI analysis."""

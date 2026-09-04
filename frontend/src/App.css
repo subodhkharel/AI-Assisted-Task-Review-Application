@@ -1,0 +1,84 @@
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+h1 {
+  margin-bottom: 24px;
+}
+
+.filter {
+  margin-bottom: 24px;
+}
+
+.filter label {
+  margin-right: 8px;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.task-card {
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.task-card h2 {
+  margin-top: 0;
+}
+
+.task-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.status-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+button,
+select {
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+button {
+  margin-left: 12px;
+  cursor: pointer;
+}
+
+button:disabled,
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.error {
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #d33;
+  border-radius: 6px;
+}
+
+.analysis {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 6px;
+  background: #f5f5f5;
+}
+
+.analysis h3 {
+  margin-top: 0;
+}

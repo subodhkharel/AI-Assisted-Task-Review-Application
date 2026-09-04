@@ -32,3 +32,21 @@ class TaskStatusUpdateSerializer(serializers.ModelSerializer):
 
         model = Task
         fields = ("status",)
+
+
+class TaskAnalysisSerializer(serializers.Serializer):
+    """Validate and serialize the structured task analysis result."""
+
+    category = serializers.ChoiceField(
+        choices=[
+            "DOCUMENT_REQUEST",
+            "APPLICATION_REVIEW",
+            "CUSTOMER_CONTACT",
+            "GENERAL",
+        ],
+    )
+    priority = serializers.ChoiceField(
+        choices=Task.Priority.choices,
+    )
+    summary = serializers.CharField()
+    recommendedAction = serializers.CharField()

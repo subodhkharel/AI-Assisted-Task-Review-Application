@@ -1,9 +1,17 @@
-from rest_framework import generics
 from rest_framework.exceptions import ValidationError
-from rest_framework import generics
 from .models import Task
-from .serializers import TaskSerializer
-from .serializers import TaskSerializer, TaskStatusUpdateSerializer
+from .serializers import (
+    TaskSerializer,
+    TaskStatusUpdateSerializer,
+    TaskAnalysisSerializer,
+)
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .services.ai import AIProviderError, MockAIProvider
+from .services.analysis import TaskAnalysisService
+
 
 class TaskListView(generics.ListAPIView):
     """Return tasks with optional status filtering."""
@@ -19,9 +27,7 @@ class TaskListView(generics.ListAPIView):
         if status is None:
             return queryset
 
-        valid_statuses = {
-            choice.value for choice in Task.Status
-        }
+        valid_statuses = {choice.value for choice in Task.Status}
 
         if status not in valid_statuses:
             raise ValidationError(
@@ -42,3 +48,49 @@ class TaskStatusUpdateView(generics.UpdateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskStatusUpdateSerializer
     http_method_names = ["patch"]
+
+
+class TaskAnalysisView(APIView):
+    """Analyse an existing task using the configured AI provider."""
+
+    def post(self, request, pk: int):
+        """Analyse the requested task and return structured AI output."""
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response(
+                {"detail": "Task not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        service = TaskAnalysisService(
+            provider=MockAIProvider(),
+        )
+
+        try:
+            analysis = service.analyse(task)
+        except AIProviderError:
+            return Response(
+                {"detail": "AI analysis is currently unavailable."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        serializer = TaskAnalysisSerializer(
+            data={
+                "category": analysis.category,
+                "priority": analysis.priority,
+                "summary": analysis.summary,
+                "recommendedAction": analysis.recommended_action,
+            },
+        )
+
+        if not serializer.is_valid():
+            return Response(
+                {"detail": "AI returned an invalid analysis."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        return Response(
+            serializer.validated_data,
+            status=status.HTTP_200_OK,
+        )
